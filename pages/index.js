@@ -11,8 +11,9 @@ export default function Home() {
 
     const handleSubmit = async (event) => {
         setLoading(true);
+        setResults(null);
         event.preventDefault();
-        const res = await fetch(`api/options/${symbol}`);
+        const res = await fetch(`/api/options/${symbol}`);
         const json = await res.json();
         console.log(json);
         setResults(json);
@@ -33,7 +34,7 @@ export default function Home() {
 
             {loading && <div>Loading...</div>}
 
-            {results && (
+            {!loading && results && (
                 <div>
                     <h3>Results</h3>
                     <Image alt='widemike' src='/mikewide.png' layout='fixed' height='400px' width='400px' />
