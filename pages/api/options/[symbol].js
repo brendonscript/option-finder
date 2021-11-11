@@ -31,7 +31,9 @@ const scrapeData = async (symbol) => {
             const calls = $("table tbody")[0].children;
 
             calls.forEach((call) => options.contracts.push(mapOptions(call.children)));
-            return optionAlg(options);
+            const res = optionAlg(options);
+            console.log(res);
+            return res;
         })
         .catch((err) => console.log(err));
 };

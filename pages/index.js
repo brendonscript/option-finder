@@ -14,6 +14,7 @@ export default function Home() {
         event.preventDefault();
         const res = await fetch(`api/options/${symbol}`);
         const json = await res.json();
+        console.log(json);
         setResults(json);
         setLoading(false);
     };
