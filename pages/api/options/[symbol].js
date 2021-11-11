@@ -1,5 +1,5 @@
 const cheerio = require("cheerio");
-const puppeteer = require("puppeteer");
+const rp = require("request-promise");
 
 export default async function handler(req, res) {
     const { symbol } = req.query;
@@ -8,34 +8,22 @@ export default async function handler(req, res) {
 }
 const scrapeData = async (symbol) => {
     const url = `https://finance.yahoo.com/quote/${symbol}/options`;
-    return puppeteer
-        .launch()
-        .then((browser) => {
-            return browser.newPage();
-        })
-        .then((page) => {
-            return page.goto(url).then(() => {
-                return page.content();
-            });
-        })
-        .then((html) => {
-            const $ = cheerio.load(html);
-            const options = {
-                symbol: symbol,
-                close: "",
-                contracts: [],
-            };
-            options.close = $("[data-reactid=47]")
-                .text()
-                .replace(/[^\d.-]/g, "");
-            const calls = $("table tbody")[0].children;
+    const html = await rp(url);
+    const $ = cheerio.load(html);
+    const options = {
+        symbol: symbol,
+        close: "",
+        contracts: [],
+    };
+    options.close = $("[data-reactid=47]")
+        .text()
+        .replace(/[^\d.-]/g, "");
+    const calls = $("table tbody")[0].children;
 
-            calls.forEach((call) => options.contracts.push(mapOptions(call.children)));
-            const res = optionAlg(options);
-            console.log(res);
-            return res;
-        })
-        .catch((err) => console.log(err));
+    calls.forEach((call) => options.contracts.push(mapOptions(call.children)));
+    const res = optionAlg(options);
+    console.log(res);
+    return res;
 };
 
 const mapOptions = (call) => {
