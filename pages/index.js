@@ -5,6 +5,7 @@ export default function Home() {
     const [symbol, setSymbol] = useState("");
     const [results, setResults] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState(null);
     const handleSymbolInput = (event) => {
         setSymbol(event.target.value);
     };
@@ -12,11 +13,15 @@ export default function Home() {
     const handleSubmit = async (event) => {
         setLoading(true);
         setResults(null);
+        setMessage(null);
         event.preventDefault();
         const res = await fetch(`/api/options/${symbol}`);
-        const json = await res.json();
-        console.log(json);
-        setResults(json);
+        const { option } = await res.json();
+        if (Object.entries(option).length === 0) {
+            setMessage("No results found");
+        } else {
+            setResults(option);
+        }
         setLoading(false);
     };
     return (
@@ -33,6 +38,8 @@ export default function Home() {
             </form>
 
             {loading && <div>Loading...</div>}
+
+            {message && <div>{message}</div>}
 
             {!loading && results && (
                 <div>

@@ -23,7 +23,7 @@ const scrapeData = async (symbol) => {
     calls.forEach((call) => options.contracts.push(mapOptions(call.children)));
     const res = optionAlg(options);
     console.log(res);
-    return res;
+    return { option: res };
 };
 
 const mapOptions = (call) => {
@@ -44,12 +44,13 @@ const mapOptions = (call) => {
         return option;
     } catch (err) {
         console.log("Error: ", err);
+        return;
     }
 };
 
 const optionAlg = (options) => {
     const close = options.close;
-    let matchingOption = "";
+    let matchingOption = {};
     if (close == null) {
         return;
     }
